@@ -17,9 +17,7 @@ export interface TransformedLocation {
 
 export default function GlobePage() {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
-  const [visitedCountries, setVisitedCountries] = useState<
-    { country: string; trips: TransformedLocation[] }[]
-  >([]);
+
   const [locations, setLocations] = useState<TransformedLocation[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -39,37 +37,6 @@ export default function GlobePage() {
         const data = await response.json();
 
         setLocations(data);
-
-        const tripsByCountry: {
-          country: string;
-          trips: TransformedLocation[];
-        }[] = [];
-
-        locations.forEach((loc: TransformedLocation) => {
-          let countryObj = tripsByCountry.find(
-            (item) => item.country === loc.country
-          );
-          if (!countryObj) {
-            tripsByCountry.push({ country: loc.country, trips: [loc] });
-          } else {
-            tripsByCountry.find((item, index) => {
-              if (
-                !item.trips.find(
-                  (l: TransformedLocation) => l.tripId === loc.tripId
-                )
-              ) {
-                if (item.country === loc.country) {
-                  tripsByCountry[index] = {
-                    country: loc.country,
-                    trips: [...tripsByCountry[index].trips, loc],
-                  };
-                }
-              }
-            });
-          }
-        });
-
-        setVisitedCountries(tripsByCountry);
       } catch (err) {
         console.error('error', err);
       } finally {
@@ -80,6 +47,31 @@ export default function GlobePage() {
     fetchLocations();
   }, []);
 
+  const tripsByCountry: { country: string; trips: TransformedLocation[] }[] =
+    [];
+
+  locations.forEach((loc: TransformedLocation) => {
+    let countryObj = tripsByCountry.find(
+      (item) => item.country === loc.country
+    );
+    if (!countryObj) {
+      tripsByCountry.push({ country: loc.country, trips: [loc] });
+    } else {
+      tripsByCountry.find((item, index) => {
+        if (
+          !item.trips.find((l: TransformedLocation) => l.tripId === loc.tripId)
+        ) {
+          if (item.country === loc.country) {
+            tripsByCountry[index] = {
+              country: loc.country,
+              trips: [...tripsByCountry[index].trips, loc],
+            };
+          }
+        }
+      });
+    }
+  });
+
   const handleCountryClick = (country: string) => {
     if (showCountryTrips === country) {
       setShowCountryTrips('');
@@ -87,6 +79,8 @@ export default function GlobePage() {
       setShowCountryTrips(country);
     }
   };
+
+  console.log(tripsByCountry);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -140,13 +134,13 @@ export default function GlobePage() {
                         <p className="text-sm text-blue-800">
                           You've Visited{' '}
                           <span className="font-bold">
-                            {visitedCountries.length}
+                            {tripsByCountry.length}
                           </span>{' '}
                           countries.
                         </p>
                       </div>
                       <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
-                        {visitedCountries.sort().map((item, key) => (
+                        {tripsByCountry.sort().map((item, key) => (
                           <div key={key}>
                             <div
                               className="flex justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer"
