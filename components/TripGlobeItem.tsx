@@ -7,8 +7,11 @@ export default function TripGlobeItem({
   trips: TransformedLocation[];
 }) {
   return trips.map((trip: TransformedLocation, key) => (
-    <div className="flex justify-between p-3 my-1 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer justify-center">
-      <Link key={key} href={`/trips/${trip.tripId}`}>
+    <div
+      key={key}
+      className="flex justify-between p-3 my-1 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer justify-center"
+    >
+      <Link href={`/trips/${trip.tripId}`}>
         <h3>{trip.title}</h3>
       </Link>
     </div>

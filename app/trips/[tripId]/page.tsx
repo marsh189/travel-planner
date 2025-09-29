@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import TripDetailClient, { TripWithLocation } from '@/components/TripDetails';
+import TripDetailClient from '@/components/TripDetails';
 import { prisma } from '@/lib/prisma';
 
 export default async function TripDetail({
