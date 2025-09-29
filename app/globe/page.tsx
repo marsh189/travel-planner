@@ -51,7 +51,7 @@ export default function GlobePage() {
     [];
 
   locations.forEach((loc: TransformedLocation) => {
-    let countryObj = tripsByCountry.find(
+    const countryObj = tripsByCountry.find(
       (item) => item.country === loc.country
     );
     if (!countryObj) {
